@@ -1,20 +1,18 @@
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 
-// Configuration Firebase
 const firebaseConfig = {
-  apiKey: 'YOUR_API_KEY',
-  authDomain: 'YOUR_AUTH_DOMAIN',
-  projectId: 'YOUR_PROJECT_ID',
-  storageBucket: 'YOUR_STORAGE_BUCKET',
-  messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
-  appId:'YOUR_APP_ID',
+  apiKey: 'AIzaSyDov17ALUBYKsRRPqR6xxYGLq2Xs66_rtw',
+  authDomain: 'recipes-app-c60eb.firebaseapp.com',
+  projectId: 'recipes-app-c60eb',
+  storageBucket: 'recipes-app-c60eb.appspot.com',
+  messagingSenderId: '708037718915',
+  appId: '1:708037718915:web:acb4159698d39547693cb6',
+  measurementId: 'G-Z1V69ZH6S3',
 };
 
-// Initialisez Firebase avec la configuration
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
-
 // Exportez l'instance initialisée de Firebase par défaut
 export default firebase;
