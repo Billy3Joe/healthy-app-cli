@@ -13,30 +13,36 @@ const firebaseConfig = {
   appId: '1:708037718915:web:acb4159698d39547693cb6',
   measurementId: 'G-Z1V69ZH6S3',
 };
+
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 
 const Login = () => {
-  const navigation = useNavigation();    
+  const navigation = useNavigation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  // const auth = getAuth();
 
   const handleSignIn = () => {
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then((userCredential) => {
-        // Handle successful sign-in
-        console.log('Successful sign-in');
-        // Navigate to the home page
+        // Connexion réussie
+        console.log('Connexion réussie');
+        // Redirection vers la page d'accueil
         navigation.navigate('Home');
       })
       .catch((error) => {
-        console.log('Error during sign-in:', error);
-        // Display an alert or handle the error
-        Alert.alert('Error', 'Invalid email or password');
+        console.log('Erreur lors de la connexion :', error);
+        // Afficher une alerte ou gérer l'erreur
+        if (error.code === 'auth/user-not-found') {
+          Alert.alert('Erreur', 'Utilisateur non trouvé. Veuillez vous inscrire.');
+        } else if (error.code === 'auth/wrong-password') {
+          Alert.alert('Erreur', 'Mot de passe incorrect. Veuillez réessayer.');
+        } else {
+          Alert.alert('Erreur', 'Une erreur est survenue. Veuillez réessayer plus tard.');
+        }
       });
   };
 
@@ -47,7 +53,7 @@ const Login = () => {
       <StatusBar />
       <View style={styles.container}>
         <View style={styles.formContainer}>
-          <Text style={styles.title}>Login Screen</Text>
+          <Text style={styles.title}>Écran de connexion</Text>
           <TextInput
             style={styles.input}
             placeholder="Email"
@@ -56,7 +62,7 @@ const Login = () => {
           />
           <TextInput
             style={styles.input}
-            placeholder="Password"
+            placeholder="Mot de passe"
             secureTextEntry={true}
             value={password}
             onChangeText={setPassword}
@@ -65,12 +71,12 @@ const Login = () => {
             onPress={handleSignIn}
             style={[styles.button, styles.shadowProp]}
             underlayColor="#fff">
-            <Text style={{fontWeight: "bold", textAlign: "center"}}>Login</Text>
+            <Text style={{ fontWeight: "bold", textAlign: "center" }}>Connexion</Text>
           </TouchableHighlight>
           <TouchableOpacity
             style={styles.signInButton}
             onPress={() => navigation.navigate('Signup')}>
-            <Text style={{color: "white", fontWeight: "bold", textAlign: "center"}}>Go to Sign up</Text>
+            <Text style={{ color: "white", fontWeight: "bold", textAlign: "center" }}>Aller à l'inscription</Text>
           </TouchableOpacity>
         </View>
       </View>

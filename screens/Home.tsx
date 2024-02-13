@@ -152,7 +152,7 @@ const Home = () => {
                 </TouchableOpacity>
               )}
               <TouchableOpacity onPress={() => handleViewComments(item.id)} style={styles.actionButton}>
-                <Text style={styles.actionViewComment}>{showComments ? 'Fermer' : 'View comments'}</Text>
+                <Text style={styles.actionViewComment}>{showComments ? 'Close comments' : 'View comments'}</Text>
               </TouchableOpacity>
             </View>
             {showComments && comments.length > 0 && (

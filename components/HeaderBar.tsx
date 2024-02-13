@@ -20,35 +20,13 @@ function HeaderBar(props) {
   return (
     <View style={[styles.container, { backgroundColor: 'green' }]}>
       <Text style={styles.title}>HEALTHY EDUCATION</Text>
-      {/* Ajout de l'image à côté du profil */}
+      {/* <Text style={styles.title}>Déconnexion</Text> */}
       <TouchableOpacity style={styles.profileContainer} onPress={() => navigation.navigate('Profile')}>
         <Image
           source={require('../assets/logo.png')}
           style={{ width: 40, height: 40 }}
         />
       </TouchableOpacity>
-      {/* <TouchableOpacity style={styles.modalItem} onPress={() => navigation.navigate('Profile')}>
-         <Text style={styles.buttonText}>Profile</Text>
-      </TouchableOpacity> */}
-      {isMenuOpen && (
-        <View style={styles.menuContainer}>
-          <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigation('Home')}>
-            <Text style={styles.menuText}>0 à 12 mois</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigation('CreatePost')}>
-            <Text style={styles.menuText}>1 à 3 ans</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem} onPress={() => handleNavigation('Profile')}>
-            <Text style={styles.menuText}>3 à 5 ans</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem} onPress={handleNavigation}>
-            <Text style={styles.menuText}>5 à 12 ans</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.menuItem} onPress={handlePlus}>
-            <Text style={styles.menuText}>plus</Text>
-          </TouchableOpacity>
-        </View>
-      )}
     </View>
   );
 }
@@ -72,26 +50,6 @@ const styles = StyleSheet.create({
   profileContainer: {
     marginRight: 10,
   },
-
-  menuContainer: {
-    position: 'absolute',
-    left: 0,
-    top: 60, // Ajustez la position verticale selon vos besoins
-    backgroundColor: 'white',
-    width: 200,
-    elevation: 5, // Pour ajouter une ombre sur Android
-    shadowColor: 'black', // Pour ajouter une ombre sur iOS
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-  },
-
-  menuItem: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#DDDDDD',
-  },
-
   menuText: {
     fontSize: 16,
   },

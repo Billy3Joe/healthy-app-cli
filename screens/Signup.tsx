@@ -26,6 +26,19 @@ const Signup = () => {
   const navigation = useNavigation();
 
   const handleSignup = () => {
+    if (!username.trim()) {
+      Alert.alert('Nom d\'utilisateur requis', 'Veuillez entrer votre nom d\'utilisateur.');
+      return;
+    }
+    if (!email.trim()) {
+      Alert.alert('Email requis', 'Veuillez entrer votre adresse e-mail.');
+      return;
+    }
+    if (!password.trim()) {
+      Alert.alert('Mot de passe requis', 'Veuillez entrer votre mot de passe.');
+      return;
+    }
+
     firebase.auth().createUserWithEmailAndPassword(email, password)
       .then((userCredential) => {
         const user = userCredential.user;
