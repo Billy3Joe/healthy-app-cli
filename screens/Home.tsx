@@ -2,7 +2,9 @@ import React, {useState, useEffect} from 'react';
 import {View, Text, Image, StyleSheet, FlatList, TouchableOpacity, TextInput} from 'react-native';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
-import {format} from 'date-fns';
+import BottomBar from '../components/BottomBar';
+import HeaderBar from '../components/HeaderBar';
+// import {format} from 'date-fns';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDov17ALUBYKsRRPqR6xxYGLq2Xs66_rtw',
@@ -80,7 +82,6 @@ const Home = () => {
         alert('Veuillez entrer un commentaire avant de soumettre.');
         return;
       }
-  
       await db.collection('comments').add({
         postId,
         content: comment,
@@ -116,6 +117,7 @@ const Home = () => {
 
   return (
     <View style={styles.container}>
+      <HeaderBar namePage="Home"/>
       {/* <Text style={styles.heading}>Recèttes Saines</Text> */}
       <FlatList
         data={posts}
@@ -146,16 +148,16 @@ const Home = () => {
                 </View>
               ) : (
                 <TouchableOpacity onPress={() => handleCommentButtonPress(item.id)} style={styles.actionButton}>
-                  <Text style={styles.actionText}>Comment</Text>
+                  <Text style={styles.actionWriteComment}>Write Comments</Text>
                 </TouchableOpacity>
               )}
               <TouchableOpacity onPress={() => handleViewComments(item.id)} style={styles.actionButton}>
-                <Text style={styles.actionText}>{showComments ? 'Fermer commentaires' : 'Voir commentaires'}</Text>
+                <Text style={styles.actionViewComment}>{showComments ? 'Fermer' : 'View comments'}</Text>
               </TouchableOpacity>
             </View>
             {showComments && comments.length > 0 && (
               <View style={{backgroundColor: '#fff'}}>
-                <Text style={styles.commentsHeading}>Commentaires :</Text>
+                <Text style={styles.commentsHeading}>Comments :</Text>
                 <FlatList
                   data={comments}
                   renderItem={({item}) => (
@@ -173,14 +175,15 @@ const Home = () => {
         )}
         keyExtractor={(item) => item.id}
       />
+        <BottomBar namePage="Home"/>
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    flexDirection: 'column',
+    paddingTop: 10,
     backgroundColor: '#fff', // Fond de la page en vert
   },
   heading: {
@@ -201,6 +204,7 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
     marginRight: 10,
+    marginLeft: 10,
   },
   userName: {
     color: '#fff',
@@ -218,14 +222,17 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     marginBottom: 5,
+    marginLeft: 10,
   },
   postContent: {
     fontSize: 16,
     color: '#fff',
+    marginLeft: 10,
   },
   postDate: {
     fontSize: 14,
     color: '#fff',
+    marginLeft: 10,
     // color: '#888',
   },
   actionsContainer: {
@@ -239,7 +246,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'orange',
     borderRadius: 5,
   },
-  actionText: {
+  actionWriteComment: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  actionViewComment: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#fff',
@@ -260,7 +272,7 @@ const styles = StyleSheet.create({
   commentButton: {
     paddingVertical: 8,
     paddingHorizontal: 12,
-    backgroundColor: '#007AFF',
+    backgroundColor: 'orange',
     borderRadius: 5,
   },
   commentButtonText: {
@@ -272,9 +284,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 10,
     marginBottom: 5,
+    marginLeft: 10,
   },
   commentItem: {
     marginBottom: 10,
+    marginLeft: 10,
   },
   commentUserName: {
     fontWeight: 'bold',
