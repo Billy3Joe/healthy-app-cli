@@ -75,6 +75,12 @@ const Home = () => {
 
   const handleCommentSubmit = async (postId) => {
     try {
+      // Vérifier si le champ de commentaire n'est pas vide
+      if (!comment.trim()) {
+        alert('Veuillez entrer un commentaire avant de soumettre.');
+        return;
+      }
+  
       await db.collection('comments').add({
         postId,
         content: comment,
@@ -114,15 +120,17 @@ const Home = () => {
       <FlatList
         data={posts}
         renderItem={({item}) => (
-          <View style={styles.postContainer}>
+          <View style={styles.postContainer} style={[{backgroundColor: 'green',   borderRadius: 5}]}>
             <View style={styles.userInfo}>
               <Image source={{uri: item.user.profileImage}} style={styles.userImage} />
               <Text style={styles.userName}>{item.user.name}</Text>
             </View>
-            <Image source={{ uri: item.imageURL }} style={styles.postImage} />
-            <Text style={styles.postTitle}>{item.title}</Text>
-            <Text style={styles.postContent}>{item.content}</Text>
-            <Text style={styles.postDate}>{item.date.toLocaleString()}</Text>
+            <Image source={{uri: item.imageURL}} style={styles.postImage} />
+            <View style={styles.contentContainer}>
+              <Text style={styles.postTitle}>{item.title}</Text>
+              <Text style={styles.postContent}>{item.content}</Text>
+              <Text style={styles.postDate}>{item.date.toLocaleString()}</Text>
+            </View>
             <View style={styles.actionsContainer}>
               {commentingPostId === item.id ? (
                 <View style={styles.commentContainer}>
@@ -146,7 +154,7 @@ const Home = () => {
               </TouchableOpacity>
             </View>
             {showComments && comments.length > 0 && (
-              <View>
+              <View style={{backgroundColor: '#fff'}}>
                 <Text style={styles.commentsHeading}>Commentaires :</Text>
                 <FlatList
                   data={comments}
@@ -173,6 +181,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor: '#fff', // Fond de la page en vert
   },
   heading: {
     fontSize: 20,
@@ -194,6 +203,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   userName: {
+    color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -205,15 +215,18 @@ const styles = StyleSheet.create({
   },
   postTitle: {
     fontSize: 18,
+    color: '#fff',
     fontWeight: 'bold',
     marginBottom: 5,
   },
   postContent: {
     fontSize: 16,
+    color: '#fff',
   },
   postDate: {
     fontSize: 14,
-    color: '#888',
+    color: '#fff',
+    // color: '#888',
   },
   actionsContainer: {
     flexDirection: 'row',
@@ -223,7 +236,7 @@ const styles = StyleSheet.create({
   actionButton: {
     paddingHorizontal: 5,
     paddingVertical: 5,
-    backgroundColor: '#007AFF',
+    backgroundColor: 'orange',
     borderRadius: 5,
   },
   actionText: {
