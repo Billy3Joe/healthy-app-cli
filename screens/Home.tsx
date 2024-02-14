@@ -1,10 +1,12 @@
 import React, {useState, useEffect} from 'react';
 import {View, Text, Image, StyleSheet, FlatList, TouchableOpacity, TextInput} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import BottomBar from '../components/BottomBar';
 import HeaderBar from '../components/HeaderBar';
-// import {format} from 'date-fns';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDov17ALUBYKsRRPqR6xxYGLq2Xs66_rtw',
@@ -22,7 +24,8 @@ if (!firebase.apps.length) {
 
 const db = firebase.firestore();
 
-const Home = () => {
+export default function Home() {
+  const navigation = useNavigation();
   const [posts, setPosts] = useState([]);
   const [commentingPostId, setCommentingPostId] = useState('');
   const [comment, setComment] = useState('');
@@ -77,7 +80,6 @@ const Home = () => {
 
   const handleCommentSubmit = async (postId) => {
     try {
-      // Vérifier si le champ de commentaire n'est pas vide
       if (!comment.trim()) {
         alert('Veuillez entrer un commentaire avant de soumettre.');
         return;
@@ -117,17 +119,22 @@ const Home = () => {
 
   return (
     <View style={styles.container}>
-      <HeaderBar namePage="Home"/>
-      {/* <Text style={styles.heading}>Recèttes Saines</Text> */}
+        <HeaderBar namePage="Home" />
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Home')}>
+          <Ionicons name="arrow-back" size={24} color="black" />
+        </TouchableOpacity>
+        <Text style={styles.title}>Espace barre de recherche</Text>
+      </View>
       <FlatList
         data={posts}
         renderItem={({item}) => (
-          <View style={styles.postContainer} style={[{backgroundColor: 'green',   borderRadius: 5}]}>
+          <View style={styles.postContainer}>
             <View style={styles.userInfo}>
-              <Image source={{uri: item.user.profileImage}} style={styles.userImage} />
+              <Image source={{ uri: item.user.profileImage }} style={styles.userImage} />
               <Text style={styles.userName}>{item.user.name}</Text>
             </View>
-            <Image source={{uri: item.imageURL}} style={styles.postImage} />
+            <Image source={{ uri: item.imageURL }} style={styles.postImage} />
             <View style={styles.contentContainer}>
               <Text style={styles.postTitle}>{item.title}</Text>
               <Text style={styles.postContent}>{item.content}</Text>
@@ -156,13 +163,12 @@ const Home = () => {
               </TouchableOpacity>
             </View>
             {showComments && comments.length > 0 && (
-              <View style={{backgroundColor: '#fff'}}>
+              <View style={{ backgroundColor: '#fff' }}>
                 <Text style={styles.commentsHeading}>Comments :</Text>
                 <FlatList
                   data={comments}
-                  renderItem={({item}) => (
+                  renderItem={({ item }) => (
                     <View style={styles.commentItem}>
-                      {/* <Text style={styles.commentUserName}>{item.Name}</Text> */}
                       <Text style={styles.commentContent}>{item.content}</Text>
                       <Text style={styles.commentTimestamp}>{item.timestamp.toDate().toLocaleString("fr-FR")}</Text>
                     </View>
@@ -175,24 +181,36 @@ const Home = () => {
         )}
         keyExtractor={(item) => item.id}
       />
-        <BottomBar namePage="Home"/>
+      <BottomBar namePage="Home" />
     </View>
   );
-};
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
     paddingTop: 10,
-    backgroundColor: '#fff', // Fond de la page en vert
+    backgroundColor: '#fff',
   },
-  heading: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 20,
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    marginBottom: 16,
+  },
+  backButton: {
+    position: 'absolute',
+    left: 16,
+  },
+  title: {
+    fontSize: 25,
+    color: 'green',
   },
   postContainer: {
     marginBottom: 20,
+    backgroundColor: 'green',
   },
   userInfo: {
     flexDirection: 'row',
@@ -233,7 +251,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#fff',
     marginLeft: 10,
-    // color: '#888',
   },
   actionsContainer: {
     flexDirection: 'row',
@@ -290,10 +307,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginLeft: 10,
   },
-  commentUserName: {
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
   commentContent: {
     marginBottom: 5,
     color: 'green',
@@ -302,4 +315,3 @@ const styles = StyleSheet.create({
     color: '#888',
   },
 });
-export default Home;

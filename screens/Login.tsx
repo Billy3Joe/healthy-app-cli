@@ -24,12 +24,17 @@ const Login = () => {
   const [password, setPassword] = useState('');
 
   const handleSignIn = () => {
+    // Vérifiez si l'email ou le mot de passe est vide
+    if (!email.trim() || !password.trim()) {
+      Alert.alert('Erreur', 'Veuillez remplir tous les champs.');
+      return;
+    }
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
       .then((userCredential) => {
         // Connexion réussie
-        console.log('Connexion réussie');
+        console.log('Connexion réussie'); // Ajoutez cette ligne
         // Redirection vers la page d'accueil
         navigation.navigate('Home');
       })
@@ -44,8 +49,7 @@ const Login = () => {
           Alert.alert('Erreur', 'Une erreur est survenue. Veuillez réessayer plus tard.');
         }
       });
-  };
-
+  };  
   return (
     <ImageBackground
       source={require('../assets/images/imgSignin.webp')}
@@ -71,12 +75,12 @@ const Login = () => {
             onPress={handleSignIn}
             style={[styles.button, styles.shadowProp]}
             underlayColor="#fff">
-            <Text style={{ fontWeight: "bold", textAlign: "center" }}>Connexion</Text>
+            <Text style={{fontWeight: "bold", textAlign: "center"}}>Connexion</Text>
           </TouchableHighlight>
           <TouchableOpacity
             style={styles.signInButton}
             onPress={() => navigation.navigate('Signup')}>
-            <Text style={{ color: "white", fontWeight: "bold", textAlign: "center" }}>Aller à l'inscription</Text>
+            <Text style={{color: "white", fontWeight: "bold", textAlign: "center"}}>Aller à l'inscription</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -145,5 +149,4 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 });
-
 export default Login;

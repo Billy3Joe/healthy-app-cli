@@ -4,7 +4,7 @@ import {useNavigation} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import BottomBar from '../components/BottomBar';
-import HeaderBar from '../components/HeaderBar';
+// import HeaderBar from '../components/HeaderBar';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 const firebaseConfig = {

@@ -3,6 +3,9 @@ import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Home from './screens/Home';
+import EditePhoto from './screens/EditePhoto';
+import EditeEmail from './screens/EditeEmail';
+import EditeName from './screens/EditeName';
 import Profile from './screens/Profile';
 import CreatePost from './screens/CreatePost';
 import SignIn from './screens/Login';
@@ -25,6 +28,9 @@ export default function App() {
         <Stack.Screen name="Login" component={SignIn} />
         <Stack.Screen name="CreatePost" component={CreatePost} />
         <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen name="EditeName" component={EditeName} />
+        <Stack.Screen name="EditeEmail" component={EditeEmail} />
+        <Stack.Screen name="EditePhoto" component={EditePhoto} />
         <Stack.Screen
           options={{
             // animation: "none",

@@ -2,12 +2,12 @@ import React, {useState} from 'react';
 import {View,TextInput,TouchableOpacity,Text,Image,StyleSheet,Alert} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import BottomBar from '../components/BottomBar';
-import HeaderBar from '../components/HeaderBar';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import 'firebase/compat/storage';
 import * as ImagePicker from 'react-native-image-picker';
+import BottomBar from '../components/BottomBar';
+import HeaderBar from '../components/HeaderBar';
 const firebaseConfig = {
   apiKey: 'AIzaSyDov17ALUBYKsRRPqR6xxYGLq2Xs66_rtw',
   authDomain: 'recipes-app-c60eb.firebaseapp.com',
@@ -20,7 +20,7 @@ const firebaseConfig = {
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
-const CreatePost = () => {
+export default function CreatePost() {
   const navigation = useNavigation();
   const [image, setImage] = useState('');
   const [title, setTitle] = useState('');
@@ -92,34 +92,34 @@ const CreatePost = () => {
   };
   return (
     <View style={styles.container}>
-      <HeaderBar namePage="CreatePost"/>
+      <HeaderBar namePage="CreatePost" />
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Home')}>
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
-        <Text style={styles.title}>Création de recettes</Text>
+        <Text style={styles.title}>Créer votre recette</Text>
       </View>
       <View style={styles.formContainer}>
-          <TouchableOpacity style={styles.addButton} onPress={pickImage}>
-            <Text style={styles.buttonText}>Sélectionner une image</Text>
-          </TouchableOpacity>
-          <Text></Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Titre"
-            value={title}
-            onChangeText={text => setTitle(text)}
-          />
-          <TextInput
-            style={[styles.input, styles.descriptionInput]}
-            placeholder="Description"
-            multiline
-            value={description}
-            onChangeText={(text) => setDescription(text)}
-          />
-          <TouchableOpacity style={styles.addButton} onPress={() => handleAddPost()}>
-            <Text style={styles.buttonText}>Créer le post</Text>
-          </TouchableOpacity>
+        <TouchableOpacity style={styles.addButton} onPress={pickImage}>
+          <Text style={styles.buttonText}>Sélectionner une image</Text>
+        </TouchableOpacity>
+        <Text />
+        <TextInput
+          style={styles.input}
+          placeholder="Titre"
+          value={title}
+          onChangeText={text => setTitle(text)}
+        />
+        <TextInput
+          style={[styles.input, styles.descriptionInput]}
+          placeholder="Description"
+          multiline
+          value={description}
+          onChangeText={text => setDescription(text)}
+        />
+        <TouchableOpacity style={styles.addButton} onPress={handleAddPost}>
+          <Text style={styles.buttonText}>Créer le post</Text>
+        </TouchableOpacity>
       </View>
       <BottomBar namePage="CreatePost" />
     </View>
@@ -176,5 +176,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-export default CreatePost;
 
