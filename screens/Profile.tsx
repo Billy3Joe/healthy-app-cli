@@ -1,12 +1,24 @@
+/* eslint-disable prettier/prettier */
 import React, {useState, useEffect} from 'react';
 import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+// import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import BottomBar from '../components/BottomBar';
 // import HeaderBar from '../components/HeaderBar';
+
+/* eslint-disable quotes */
+/* eslint-disable prettier/prettier */
+// Import the functions you need from the SDKs you need
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
+import 'firebase/compat/storage';
+import 'firebase/compat/auth';
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: 'AIzaSyDov17ALUBYKsRRPqR6xxYGLq2Xs66_rtw',
   authDomain: 'recipes-app-c60eb.firebaseapp.com',
@@ -20,6 +32,8 @@ const firebaseConfig = {
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
+// export default firebase;
+
 import placeholderImage from '../assets/img-profiles/avatar.jpg';
 export default function Profile() {
   const navigation = useNavigation();
@@ -42,15 +56,9 @@ export default function Profile() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Home')}>
-          <Ionicons name="arrow-back" size={24} color="black" />
-        </TouchableOpacity>
         <Text style={styles.title}>Édition de l'utilisateur</Text>
       </View>
       <Image source={placeholderImage} style={styles.profileImage} />
-      <View style={styles.editIconContainer}>
-        <Ionicons name="pencil" size={20} color="white" />
-      </View>
       <View style={styles.userInfoContainer}>
         <Text style={styles.name}>{user?.Name}</Text>
       </View>
@@ -113,10 +121,12 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
+    color: '#000',
   },
   details: {
     fontSize: 16,
     marginBottom: 5,
+    color: '#000',
   },
   editButton: {
     flexDirection: 'row',

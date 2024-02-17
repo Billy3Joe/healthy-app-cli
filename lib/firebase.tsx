@@ -1,6 +1,13 @@
+/* eslint-disable quotes */
+/* eslint-disable prettier/prettier */
+// Import the functions you need from the SDKs you need
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: 'AIzaSyDov17ALUBYKsRRPqR6xxYGLq2Xs66_rtw',
   authDomain: 'recipes-app-c60eb.firebaseapp.com',
@@ -14,5 +21,5 @@ const firebaseConfig = {
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
-// Exportez l'instance initialisée de Firebase par défaut
-export default firebase;
+// export default firebase;
+

@@ -1,9 +1,21 @@
+/* eslint-disable prettier/prettier */
 import React, {useState} from 'react';
 import {View, Text, TextInput, Button, ImageBackground, StatusBar, StyleSheet, Alert, TouchableOpacity, TouchableHighlight} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import firebase from 'firebase/compat/app';
 import {getAuth, signInWithEmailAndPassword} from 'firebase/auth';
 
+/* eslint-disable quotes */
+/* eslint-disable prettier/prettier */
+// Import the functions you need from the SDKs you need
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
+import 'firebase/compat/storage';
+import 'firebase/compat/auth';
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: 'AIzaSyDov17ALUBYKsRRPqR6xxYGLq2Xs66_rtw',
   authDomain: 'recipes-app-c60eb.firebaseapp.com',
@@ -17,6 +29,7 @@ const firebaseConfig = {
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
+// export default firebase;
 
 const Login = () => {
   const navigation = useNavigation();
@@ -75,15 +88,16 @@ const Login = () => {
             onPress={handleSignIn}
             style={[styles.button, styles.shadowProp]}
             underlayColor="#fff">
-            <Text style={{fontWeight: "bold", textAlign: "center"}}>Connexion</Text>
+            <Text style={{fontWeight: 'bold', color: 'green'}}>Login</Text>
           </TouchableHighlight>
           <TouchableOpacity
-            style={styles.signInButton}
+            style={[styles.button, styles.signInButton, styles.shadowProp]}
             onPress={() => navigation.navigate('Signup')}>
-            <Text style={{color: "white", fontWeight: "bold", textAlign: "center"}}>Aller à l'inscription</Text>
+            <Text style={{color: 'green', fontWeight: 'bold'}}>Inscription</Text>
           </TouchableOpacity>
         </View>
       </View>
+
     </ImageBackground>
   );
 };
@@ -109,12 +123,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    alignItems: 'center', // Ajout de cette ligne
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
     textAlign: 'center',
+    color:'#000',
   },
   input: {
     width: 225,
@@ -123,6 +139,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 10,
+    color:'#000',
   },
   button: {
     justifyContent: 'center',
@@ -132,6 +149,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 5,
     marginBottom: 20,
+    padding:15,
   },
   shadowProp: {
     shadowColor: '#171717',
@@ -144,9 +162,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     height: 50,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: '#fff',
     borderRadius: 5,
     marginBottom: 10,
+    padding:15,
   },
 });
 export default Login;

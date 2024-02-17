@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import React, {useState} from 'react';
 import {useNavigation} from "@react-navigation/native";
 import {StyleSheet, Text, TouchableOpacity, View, Image, Alert} from "react-native";
@@ -24,7 +25,7 @@ function HeaderBar(props) {
       <TouchableOpacity style={styles.profileContainer} onPress={() => navigation.navigate('Profile')}>
         <Image
           source={require('../assets/logo.png')}
-          style={{ width: 40, height: 40 }}
+          style={{width: 40, height: 40}}
         />
       </TouchableOpacity>
     </View>

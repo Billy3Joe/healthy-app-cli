@@ -1,10 +1,20 @@
+/* eslint-disable prettier/prettier */
 import React, {useState} from 'react';
 import {View, Text, TextInput, TouchableHighlight, TouchableOpacity, ImageBackground, StatusBar, StyleSheet, Alert} from 'react-native';
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
-import 'firebase/compat/firestore';
 import {useNavigation} from '@react-navigation/native';
 
+/* eslint-disable quotes */
+/* eslint-disable prettier/prettier */
+// Import the functions you need from the SDKs you need
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
+import 'firebase/compat/storage';
+import 'firebase/compat/auth';
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: 'AIzaSyDov17ALUBYKsRRPqR6xxYGLq2Xs66_rtw',
   authDomain: 'recipes-app-c60eb.firebaseapp.com',
@@ -18,6 +28,7 @@ const firebaseConfig = {
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
+// export default firebase;
 
 const Signup = () => {
   const [username, setUsername] = useState('');
@@ -102,11 +113,11 @@ const Signup = () => {
             onPress={() => handleSignup()}
             style={[styles.button, styles.shadowProp]}
             underlayColor="#fff">
-            <Text style={{ fontWeight: "bold", textAlign: "center" }}>S'inscrire</Text>
+            <Text style={{fontWeight: 'bold', textAlign: 'center',  color: 'green'}}>Inscription</Text>
           </TouchableHighlight>
           <TouchableOpacity
             style={styles.signInButton}>
-            <Text style={{ color: "white", fontWeight: "bold", textAlign: "center" }}>Aller à la page de connexion</Text>
+            <Text style={{color: 'white', fontWeight: 'bold', textAlign: 'center', color: 'green'}}>Login</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -135,12 +146,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
+    alignItems: 'center', // Ajout de cette ligne
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
     textAlign: 'center',
+    color:'#000',
   },
   input: {
     width: 225,
@@ -149,6 +162,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 10,
+    color:'#000',
   },
   button: {
     justifyContent: 'center',
@@ -158,6 +172,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 5,
     marginBottom: 20,
+    padding:15,
   },
   shadowProp: {
     shadowColor: '#171717',
@@ -170,10 +185,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     height: 50,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: '#fff',
     borderRadius: 5,
     marginBottom: 10,
+    padding:15,
   },
 });
-
 export default Signup;

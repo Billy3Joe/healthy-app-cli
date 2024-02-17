@@ -1,6 +1,8 @@
+/* eslint-disable prettier/prettier */
 import React, {useState} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View, Modal} from 'react-native';
 import {useNavigation} from "@react-navigation/native";
+// import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 function BottomBar(props) {
   const navigation = useNavigation();
@@ -8,8 +10,9 @@ function BottomBar(props) {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Home')}>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Home')} >
         <Text style={styles.buttonText}>Home</Text>
+        {/* <MaterialIcons name="Home" size={24} color="black" />  */}
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('CreatePost')}>
         <Text style={styles.buttonText}>Post</Text>

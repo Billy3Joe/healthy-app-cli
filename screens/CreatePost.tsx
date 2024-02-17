@@ -1,13 +1,32 @@
+/* eslint-disable prettier/prettier */
 import React, {useState} from 'react';
-import {View,TextInput,TouchableOpacity,Text,Image,StyleSheet,Alert} from 'react-native';
+import {
+  View,
+  TextInput,
+  TouchableOpacity,
+  Text,
+  // Image,
+  StyleSheet,
+  Alert,
+} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/firestore';
-import 'firebase/compat/storage';
+// import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as ImagePicker from 'react-native-image-picker';
 import BottomBar from '../components/BottomBar';
 import HeaderBar from '../components/HeaderBar';
+
+/* eslint-disable quotes */
+/* eslint-disable prettier/prettier */
+// Import the functions you need from the SDKs you need
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
+import 'firebase/compat/storage';
+import 'firebase/compat/auth';
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: 'AIzaSyDov17ALUBYKsRRPqR6xxYGLq2Xs66_rtw',
   authDomain: 'recipes-app-c60eb.firebaseapp.com',
@@ -17,9 +36,12 @@ const firebaseConfig = {
   appId: '1:708037718915:web:acb4159698d39547693cb6',
   measurementId: 'G-Z1V69ZH6S3',
 };
+
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
+// export default firebase;
+
 export default function CreatePost() {
   const navigation = useNavigation();
   const [image, setImage] = useState('');
@@ -49,28 +71,32 @@ export default function CreatePost() {
         };
         await firebase.firestore().collection('posts').add(post);
         // Affichez un message de confirmation
-        Alert.alert('Succès','Le post a été créé avec succès.',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                // Réinitialisez les champs après la création du post
-                setImage('');
-                setTitle('');
-                setDescription('');
-                // Redirigez l'utilisateur vers la page Home
-                navigation.navigate('Home');
-              },
+        Alert.alert('Succès', 'Le post a été créé avec succès.', [
+          {
+            text: 'OK',
+            onPress: () => {
+              // Réinitialisez les champs après la création du post
+              setImage('');
+              setTitle('');
+              setDescription('');
+              // Redirigez l'utilisateur vers la page Home
+              navigation.navigate('Home');
             },
-          ]
-        );
+          },
+        ]);
       } else {
         // Affichage d'une alerte si aucune image n'est sélectionnée
-        Alert.alert('Erreur', 'Veuillez sélectionner une image avant de créer le post');
+        Alert.alert(
+          'Erreur',
+          'Veuillez sélectionner une image avant de créer le post',
+        );
       }
     } catch (error) {
       // Affichage d'une alerte en cas d'erreur lors de l'ajout du post
-      Alert.alert('Erreur', 'Une erreur est survenue lors de la création du post. Veuillez réessayer.');
+      Alert.alert(
+        'Erreur',
+        'Une erreur est survenue lors de la création du post. Veuillez réessayer.',
+      );
       console.error('Error adding post:', error);
     }
   };
@@ -81,23 +107,25 @@ export default function CreatePost() {
         quality: 1,
       };
 
-      ImagePicker.launchImageLibrary(options, (response) => {
-        if (!response.didCancel) {
-          setImage(response.uri);
+      ImagePicker.launchImageLibrary(options, response => {
+        if (!response.didCancel && response.assets) {
+          setImage(response.assets[0].uri);
         }
       });
     } catch (error) {
-      console.error('Erreur lors de la sélection de l\'image :', error);
+      console.error("Erreur lors de la sélection de l'image :", error);
     }
   };
   return (
     <View style={styles.container}>
       <HeaderBar namePage="CreatePost" />
       <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Home')}>
-          <Ionicons name="arrow-back" size={24} color="black" />
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => navigation.navigate('Home')}>
+             {/* <Ionicons name="add-outline" size={24} color="black" /> */}
         </TouchableOpacity>
-        <Text style={styles.title}>Créer votre recette</Text>
+        <Text style={styles.title}>Publier votre recette</Text>
       </View>
       <View style={styles.formContainer}>
         <TouchableOpacity style={styles.addButton} onPress={pickImage}>
@@ -118,18 +146,18 @@ export default function CreatePost() {
           onChangeText={text => setDescription(text)}
         />
         <TouchableOpacity style={styles.addButton} onPress={handleAddPost}>
-          <Text style={styles.buttonText}>Créer le post</Text>
+          <Text style={styles.buttonText}>Confirmer</Text>
         </TouchableOpacity>
       </View>
       <BottomBar namePage="CreatePost" />
     </View>
   );
-};
+}
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'column',
-    paddingTop:10,
+    paddingTop: 10,
   },
   header: {
     flexDirection: 'row',
@@ -155,14 +183,17 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     padding: 10,
     marginBottom: 10,
+    color:'#000',
   },
   descriptionInput: {
-    height: 150, 
+    height: 150,
+    color:'#000',
   },
   image: {
     width: '100%',
     height: 200,
     marginBottom: 0,
+    color:'#000',
   },
   addButton: {
     backgroundColor: 'green',
@@ -176,4 +207,3 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
