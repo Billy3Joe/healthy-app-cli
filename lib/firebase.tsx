@@ -2,6 +2,8 @@
 /* eslint-disable prettier/prettier */
 // Import the functions you need from the SDKs you need
 import firebase from 'firebase/compat/app';
+import 'firebase/compat/firestore';
+import 'firebase/compat/storage';
 import 'firebase/compat/auth';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -22,4 +24,3 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 // export default firebase;
-

@@ -1,3 +1,55 @@
+# Healthy App
+
+Healthy App est une application mobile développée avec React Native qui permet aux utilisateurs de partager et de découvrir des recettes saines. Cette application offre une plateforme conviviale pour encourager des habitudes alimentaires positives.
+Configuration du Projet
+Prérequis
+
+    Node.js et npm installés sur votre machine
+    Accès à un émulateur Android ou un appareil Android connecté via USB (pour l'exécution sur Android)
+    Xcode installé sur votre machine (pour l'exécution sur iOS)
+
+## Étape 1: Installation des Dépendances
+
+    Clonez le dépôt du projet :
+
+    bash
+
+git clone https://github.com/Billy3Joe/healthy-app-cli.git
+
+Accédez au répertoire du projet :
+
+bash
+
+cd healthyApp
+
+Installez les dépendances du projet :
+
+bash
+
+    npm install
+
+## Étape 2: Configuration de Firebase
+
+    Créez un projet Firebase sur Firebase Console.
+    Ajoutez votre application à votre projet Firebase et téléchargez le fichier de configuration (google-services.json pour Android).
+    Placez le fichier de configuration dans le répertoire approprié de votre projet React Native (android/app pour Android).
+
+## Étape 3: Exécution du Projet
+Sur Android
+
+    Lancez un émulateur Android ou connectez un appareil Android via USB à votre machine.
+    Exécutez la commande suivante pour lancer l'application sur votre appareil ou émulateur Android :
+
+    bash
+
+    npx react-native run-android
+
+
+
+
+
+
+
 This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
 
 # Getting Started

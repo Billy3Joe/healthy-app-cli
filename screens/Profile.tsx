@@ -14,8 +14,6 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import 'firebase/compat/storage';
 import 'firebase/compat/auth';
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -32,25 +30,33 @@ const firebaseConfig = {
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
-// export default firebase;
 
 import placeholderImage from '../assets/img-profiles/avatar.jpg';
+
 export default function Profile() {
   const navigation = useNavigation();
   const [user, setUser] = useState(null);
+
   useEffect(() => {
-    const uid = firebase.auth().currentUser.uid;
-    firebase.firestore().collection('users').doc(uid).get()
-      .then((doc) => {
-        if (doc.exists) {
-          setUser(doc.data());
-        } else {
-          console.log("User document not found");
-        }
-      })
-      .catch((error) => {
-        console.error("Error retrieving user document:", error);
-      });
+    const currentUser = firebase.auth().currentUser;
+    if (currentUser) {
+      const uid = currentUser.uid;
+      firebase.firestore().collection('users').doc(uid).get()
+        .then((doc) => {
+          if (doc.exists) {
+            const userData = doc.data();
+            console.log("User data:", userData); // Vérifier les données utilisateur récupérées
+            setUser(userData);
+          } else {
+            console.log("User document not found");
+          }
+        })
+        .catch((error) => {
+          console.error("Error retrieving user document:", error);
+        });
+    } else {
+      console.log("User not logged in");
+    }
   }, []);
 
   return (
@@ -63,7 +69,7 @@ export default function Profile() {
         <Text style={styles.name}>{user?.Name}</Text>
       </View>
       <View style={styles.emailContainer}>
-        <Text style={styles.details}>EMAIL: {user?.Email}</Text>
+        <Text style={styles.details}>{user?.Email}</Text>
       </View>
       <View style={styles.infosContainer}>
         <TouchableOpacity onPress={() => navigation.navigate('EditePhoto')} style={[styles.editButton]}>
@@ -80,7 +86,7 @@ export default function Profile() {
         </TouchableOpacity>
       </View>
       <View style={styles.footer}>
-       <BottomBar namePage="Profile" />
+        <BottomBar namePage="Profile" />
       </View>
     </View>
   );

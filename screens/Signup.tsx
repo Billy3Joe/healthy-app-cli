@@ -1,20 +1,11 @@
-/* eslint-disable prettier/prettier */
 import React, {useState} from 'react';
-import {View, Text, TextInput, TouchableHighlight, TouchableOpacity, ImageBackground, StatusBar, StyleSheet, Alert} from 'react-native';
+import {View, Text, TextInput, TouchableHighlight, TouchableOpacity, ImageBackground, StatusBar, StyleSheet, Alert, Image} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-
-/* eslint-disable quotes */
-/* eslint-disable prettier/prettier */
-// Import the functions you need from the SDKs you need
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import 'firebase/compat/storage';
 import 'firebase/compat/auth';
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: 'AIzaSyDov17ALUBYKsRRPqR6xxYGLq2Xs66_rtw',
   authDomain: 'recipes-app-c60eb.firebaseapp.com',
@@ -28,7 +19,6 @@ const firebaseConfig = {
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
-// export default firebase;
 
 const Signup = () => {
   const [username, setUsername] = useState('');
@@ -53,10 +43,11 @@ const Signup = () => {
     firebase.auth().createUserWithEmailAndPassword(email, password)
       .then((userCredential) => {
         const user = userCredential.user;
+        const defaultProfileImage = 'https://firebasestorage.googleapis.com/v0/b/recipes-app-c60eb.appspot.com/o/images%2FFMRB06ZBpmVSfRPb0eBhRLzavp22_1704573584096.jpg?alt=media&token=96238902-13b6-43bc-89fc-31551b4acc9c';
         firebase.firestore().collection('users').doc(user.uid).set({
           Email: email,
           Name: username,
-          Profile_Image: '',
+          Profile_Image: defaultProfileImage,
           Friends: [],
         })
           .then(() => {
@@ -64,10 +55,11 @@ const Signup = () => {
             setUsername('');
             setEmail('');
             setPassword('');
-            navigation.navigate('Login'); // Redirection vers la page de connexion
+            navigation.navigate('Login');
           })
           .catch((error) => {
             console.error('Erreur lors de la création du document utilisateur :', error.message);
+            Alert.alert('Erreur', 'Une erreur s\'est produite lors de l\'inscription. Veuillez réessayer.');
           });
       })
       .catch((error) => {
@@ -76,6 +68,8 @@ const Signup = () => {
         console.error('Erreur lors de l\'inscription :', errorCode, errorMessage);
         if (errorCode === 'auth/email-already-in-use') {
           Alert.alert('Adresse e-mail déjà utilisée', 'Cette adresse e-mail est déjà associée à un autre compte.');
+        } else if (errorCode === 'auth/weak-password') {
+          Alert.alert('Mot de passe faible', 'Le mot de passe doit comporter au moins 6 caractères.');
         } else {
           Alert.alert('Inscription échouée', errorMessage);
         }
@@ -113,10 +107,9 @@ const Signup = () => {
             onPress={() => handleSignup()}
             style={[styles.button, styles.shadowProp]}
             underlayColor="#fff">
-            <Text style={{fontWeight: 'bold', textAlign: 'center',  color: 'green'}}>Inscription</Text>
+            <Text style={{fontWeight: 'bold', textAlign: 'center', color: 'green'}}>Inscription</Text>
           </TouchableHighlight>
-          <TouchableOpacity
-            style={styles.signInButton}>
+          <TouchableOpacity style={styles.signInButton}>
             <Text style={{color: 'white', fontWeight: 'bold', textAlign: 'center', color: 'green'}}>Login</Text>
           </TouchableOpacity>
         </View>
@@ -146,14 +139,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    alignItems: 'center', // Ajout de cette ligne
+    alignItems: 'center',
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
     textAlign: 'center',
-    color:'#000',
+    color: '#000',
   },
   input: {
     width: 225,
@@ -162,7 +155,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 10,
-    color:'#000',
+    color: '#000',
   },
   button: {
     justifyContent: 'center',
@@ -172,7 +165,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 5,
     marginBottom: 20,
-    padding:15,
+    padding: 15,
   },
   shadowProp: {
     shadowColor: '#171717',
@@ -188,7 +181,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 5,
     marginBottom: 10,
-    padding:15,
+    padding: 15,
   },
 });
+
 export default Signup;

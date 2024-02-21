@@ -1,14 +1,8 @@
-/* eslint-disable prettier/prettier */
 import React, {useState, useEffect} from 'react';
-import {View, Text, Image, StyleSheet, TextInput, ScrollView, RefreshControl, TouchableOpacity} from 'react-native';
-// import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {SafeAreaView} from 'react-native-safe-area-context';
-// Importez AsyncStorage depuis '@react-native-async-storage/async-storage'
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {View, Text, Image, StyleSheet, FlatList, TouchableOpacity, TextInput, RefreshControl} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
-import 'firebase/compat/storage';
-import 'firebase/compat/auth';
 import BottomBar from '../components/BottomBar';
 import HeaderBar from '../components/HeaderBar';
 
@@ -28,57 +22,99 @@ if (!firebase.apps.length) {
 
 const db = firebase.firestore();
 
-export default function Home()  {
-  const [posts, setPosts] = useState([]);
+export default function Home() {
+  const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
   const [searchText, setSearchText] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [searchError, setSearchError] = useState(null);
-  const [commentInputs, setCommentInputs] = useState({});
+  const [posts, setPosts] = useState([]);
+  const [commentingPostId, setCommentingPostId] = useState('');
+  const [comment, setComment] = useState('');
+  const [comments, setComments] = useState([]);
   const [showComments, setShowComments] = useState(false);
-  const [comments, setComments] = useState([])
 
   useEffect(() => {
-    //Récupérer les likes depuis AsyncStorage lors du chargement de la page
-    retrieveLikesFromStorage();
-    //fetchPosts() pour récupérer les publications depuis Firebase
+    const fetchPosts = async () => {
+      try {
+        const snapshot = await firebase.firestore().collection('posts').get();
+        const fetchedPosts = [];
+        for (const doc of snapshot.docs) {
+          const postData = doc.data();
+          const date = postData.date ? postData.date.toDate() : null; // Vérifier si postData.date est défini
+          const userSnapshot = await firebase.firestore().collection('users').doc(postData.user).get();
+          if (userSnapshot.exists) {
+            const userData = userSnapshot.data();
+            if (userData && userData.Profile_Image) {
+              const post = {
+                id: doc.id,
+                ...postData,
+                date, // Utiliser la valeur de date définie ou null
+                user: {
+                  name: userData.Name,
+                  profileImage: userData.Profile_Image,
+                },
+              };
+              fetchedPosts.push(post);
+            } else {
+              console.error('User data or Profile_Image field not found for post', doc.id);
+            }
+          } else {
+            console.error('User data not found for post', doc.id);
+          }
+        }
+        setPosts(fetchedPosts);
+      } catch (error) {
+        console.error('Error fetching posts:', error);
+      }
+    };
     fetchPosts();
-  }, []);
-  const fetchPosts = async () => {
+  }, []);  
+
+  const handleRefresh = async () => {
+    setRefreshing(true); // Activer l'indicateur de chargement
+
     try {
+      // Réalisez ici votre logique d'actualisation
       const snapshot = await firebase.firestore().collection('posts').get();
       const fetchedPosts = [];
+
       for (const doc of snapshot.docs) {
         const postData = doc.data();
         const date = postData.date.toDate();
+
         const userSnapshot = await firebase.firestore().collection('users').doc(postData.user).get();
+
         if (userSnapshot.exists) {
           const userData = userSnapshot.data();
+
           if (userData && userData.Profile_Image) {
             const post = {
               id: doc.id,
               ...postData,
-              date: date.toLocaleDateString(), // Formatage de la date en chaîne de caractères
+              date,
               user: {
-                Name: userData.Name,
+                name: userData.Name,
                 profileImage: userData.Profile_Image,
               },
             };
             fetchedPosts.push(post);
           } else {
-            console.error('Données utilisateur ou champ Profile_Image introuvables pour le post', doc.id);
+            console.error('User data or Profile_Image field not found for post', doc.id);
           }
         } else {
-          console.error('Données utilisateur introuvables pour le post', doc.id);
+          console.error('User data not found for post', doc.id);
         }
       }
-        setPosts(fetchedPosts);
+      setPosts(fetchedPosts);
 
+      // Désactiver l'indicateur de chargement une fois l'actualisation terminée
+      setRefreshing(false);
     } catch (error) {
-      console.error('Erreur lors de la récupération des posts :', error);
+      console.error('Erreur lors de l\'actualisation :', error);
+      setRefreshing(false); // Assurez-vous de désactiver l'indicateur de chargement en cas d'erreur
     }
   };
-
 
   const handleSearchPress = async () => {
     try {
@@ -111,122 +147,53 @@ export default function Home()  {
       setSearchError('Erreur lors de la recherche.');
     }
   };
-// Dans la fonction handleViewComments
-const handleViewComments = async (postId) => {
-  try {
-    const postRef = firebase.firestore().collection('posts').doc(postId);
-    const postDoc = await postRef.get();
 
-    if (postDoc.exists) {
-      const post = postDoc.data();
-      const postComments = post.comments || [];
-      console.log('Comments for post:', postComments); 
-      setComments(postComments); // Mettre à jour les commentaires dans l'état
-      setShowComments(prevState => !prevState); // Inverser l'état actuel de showComments
-    } else {
-      console.error('Post not found:', postId);
-    }
-  } catch (error) {
-    console.error('Error fetching comments:', error);
-  }
-};
-
-  const handleCommentPress = (postId) => {
-    setCommentInputs((prevInputs) => ({
-      ...prevInputs,
-      [postId]: !prevInputs[postId], // Inverser l'état actuel
-    }));
+  const handleCommentButtonPress = (postId) => {
+    setCommentingPostId(postId);
   };
-  // Dans la fonction handleCommentChange
-const handleCommentChange = (postId, text) => {
-  setPosts((prevPosts) =>
-    prevPosts.map((post) => {
-      if (post.id === postId) {
-        return { ...post, comment: text };
+
+  const handleCommentSubmit = async (postId) => {
+    try {
+      if (!comment.trim()) {
+        alert('Veuillez entrer un commentaire avant de soumettre.');
+        return;
       }
-      return post;
-    })
-  );
-};
-const handleLikePress = async (postId) => {
-  try {
-    // Récupérer les likes depuis AsyncStorage
-    let savedLikes = await AsyncStorage.getItem('likes');
-    // Convertir les likes en un objet JavaScript
-    savedLikes = savedLikes ? JSON.parse(savedLikes) : [];
-
-    // Mettre à jour les likes dans l'état
-    setPosts((prevPosts) =>
-      prevPosts.map((post) => {
-        if (post.id === postId) {
-          const updatedLikes = post.isLiked ? post.likes - 1 : post.likes + 1;
-          const updatedPost = { ...post, likes: updatedLikes, isLiked: !post.isLiked };
-
-          // Mettre à jour les likes dans les données récupérées depuis AsyncStorage
-          const updatedSavedLikes = savedLikes.map((savedPost) => {
-            if (savedPost.id === postId) {
-              return updatedPost;
-            }
-            return savedPost;
-          });
-
-          // Enregistrer les likes mis à jour dans AsyncStorage
-          AsyncStorage.setItem('likes', JSON.stringify(updatedSavedLikes));
-
-          return updatedPost;
-        }
-        return post;
-      })
-    );
-  } catch (error) {
-    console.error('Error updating likes:', error);
-  }
-};
-
-// Fonction pour enregistrer le nombre de likes dans AsyncStorage
-const saveLikesToStorage = async (likesData) => {
-  try {
-    // Enregistrez le nombre de likes dans AsyncStorage
-    await AsyncStorage.setItem('likes', JSON.stringify(likesData));
-  } catch (error) {
-    console.error("Erreur lors de l'enregistrement du nombre de likes dans AsyncStorage:", error);
-  }
-};
-
-// Fonction pour récupérer le nombre de likes depuis AsyncStorage
-// Fonction pour récupérer le nombre de likes depuis AsyncStorage
-const retrieveLikesFromStorage = async () => {
-  try {
-    // Récupérez le nombre de likes depuis AsyncStorage
-    const savedLikes = await AsyncStorage.getItem('likes');
-    if (savedLikes !== null) {
-      // Convertissez le nombre de likes récupéré en objet JavaScript
-      const parsedLikes = JSON.parse(savedLikes);
-      // Mettez à jour les likes dans l'état des publications
-      setPosts(parsedLikes);
+      await db.collection('comments').add({
+        postId,
+        content: comment,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      });
+      setComment('');
+      setCommentingPostId('');
+      fetchComments(postId);
+    } catch (error) {
+      console.error('Error submitting comment:', error);
     }
-  } catch (error) {
-    console.error("Erreur lors de la récupération du nombre de likes depuis AsyncStorage:", error);
-  }
-};
-
-// Utilisez useEffect pour récupérer le nombre de likes depuis AsyncStorage lors du chargement de la page
-useEffect(() => {
-  retrieveLikesFromStorage();
-}, []);
-
-
-
-  const handleRefresh = () => {
-    setRefreshing(true);
-    fetchPosts();
-    setRefreshing(false);
   };
 
+  const handleViewComments = async (postId) => {
+    fetchComments(postId);
+    setShowComments(!showComments);
+  };
+
+  const fetchComments = async (postId) => {
+    try {
+      const snapshot = await db.collection('comments').where('postId', '==', postId).get();
+      const fetchedComments = [];
+
+      snapshot.forEach((doc) => {
+        fetchedComments.push(doc.data());
+      });
+
+      setComments(fetchedComments);
+    } catch (error) {
+      console.error('Error fetching comments:', error);
+    }
+  };
   return (
-    <SafeAreaView style={styles.container}>
-      <HeaderBar namePage="Home"/>
-      <View style={styles.searchContainer}>
+    <View style={styles.container} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}>
+        <HeaderBar namePage="Home" />
+        <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
           placeholder="Rechercher..."
@@ -234,107 +201,121 @@ useEffect(() => {
           value={searchText}
         />
         <TouchableOpacity onPress={handleSearchPress}>
-          <Text style={styles.searchIcon}>Search</Text>
+          <Image 
+            source={require('../assets/icones/rechercher.png')}
+            style={[styles.icon, {width: 24, height: 24, marginRight:20 }]}
+          />
+          {/* <Text style={styles.searchIcon}>Search</Text> */}
         </TouchableOpacity>
       </View>
       <View style={styles.errorContainer}>
         {searchError && (
           <Text style={styles.errorText}>{searchError}</Text>
-        )}
+          )}
       </View>
-
-      <ScrollView style={styles.container} refreshControl={<RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />}>
-        {posts.length === 0 ? (
-          <View style={styles.RecipeContainer}>
-            <Text style={styles.RecipeText}>Soyez le premier/ la première à partager votre recette saine.</Text>
-            <Image source={require('../assets/logo.png')}/>
-            <Text style={styles.RecipeText}>Merci pour votre confiance.</Text>
-          </View>
-        ) : (
-          posts.map((post) => (
-            <View style={styles.card} key={post.id}>
-              <View style={styles.userContainer}>
-                <Image source={{ uri: post.user.profileImage }} style={styles.imageProfile} />
-                <Text style={styles.userName}>{post.user.Name}</Text>
-              </View>
-              <Image source={{ uri: post.imageURL }} style={styles.image} />
-              <View style={styles.content}>
-                <Text style={styles.date}>Publié le {post.date}</Text>
-                <Text style={styles.title}>{post.title}</Text>
-                <Text style={styles.description}>{post.content}</Text>
-                <View style={styles.iconsContainer}>
-                  <TouchableOpacity onPress={() => handleCommentPress(post.id)}>
-                    <Image
-                      source={require('../assets/commenter.png')}
-                      style={[styles.icon, { width: 24, height: 24 }]}
-                    />
-                  </TouchableOpacity>
-                    <TouchableOpacity onPress={() => handleLikePress(post.id)}>
-                      <Image
-                        source={post.isLiked ? require('../assets/likerRouge.png') : require('../assets/liker.png')}
-                        style={styles.icon}
-                      />
-                    </TouchableOpacity>
-                    <Text style={styles.likes}>{post.likes}</Text>
-                   <TouchableOpacity>
-                    <Image
-                      source={require('../assets/partager.png')}
-                      style={[styles.icon, { width: 24, height: 24 }]}
-                    />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => handleViewComments(post.id)} style={styles.actionButton}>
-                    <Text style={styles.viewComments}>View comment</Text>
-                  </TouchableOpacity>
-
-                  {showComments && comments.length > 0 && (
-                    <View>
-                      <Text style={styles.commentsHeading}>Comments :</Text>
-                      {comments.map((comment, index) => (
-                        <View key={index} style={styles.commentItem}>
-                          <Text style={styles.commentContent}>{comment.text}</Text>
-                          <Text style={styles.commentTimestamp}>{comment.date}</Text>
-                        </View>
-                      ))}
-                    </View>
-                  )}
-                </View>
-                {commentInputs[post.id] && (
-                  <View style={styles.commentContainer}>
-                    <TextInput
-                      style={styles.commentInput}
-                      placeholder='Ajouter un commentaire...'
-                      value={post.comment}
-                      onChangeText={(text) => handleCommentChange(post.id, text)}
-                    />
-                    <TouchableOpacity onPress={() => handleCommentSubmit(post.id)}>
-                      <Image
-                      source={require('../assets/envoyer.png')}
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Home')}>
+          {/* <Ionicons name="arrow-back" size={24} color="black" /> */}
+        </TouchableOpacity>
+        {/* <Text style={styles.title}>Espace barre de recherche</Text> */}
+      </View>
+      <FlatList
+        data={posts}
+        renderItem={({item}) => (
+          <View style={styles.postContainer}>
+            <View style={styles.userInfo}>
+              <Image source={{ uri: item.user.profileImage }} style={styles.userImage} />
+              <Text style={styles.userName}>{item.user.name}</Text>
+            </View>
+            <Image source={{ uri: item.imageURL }} style={styles.postImage} />
+            <View style={styles.contentContainer}>
+              <Text style={styles.postDate}>Publié le {item.date.toLocaleString()}</Text>
+              <Text style={styles.postTitle}>{item.title}</Text>
+              <Text style={styles.postContent}>{item.content}</Text>
+            </View>
+            <View style={styles.actionsContainer}>
+              {commentingPostId === item.id ? (
+                <View style={styles.commentContainer}>
+                  <TextInput
+                    style={styles.commentInput}
+                    placeholder="Enter your comment..."
+                    value={comment}
+                    onChangeText={setComment}
+                  />
+                  <TouchableOpacity onPress={() => handleCommentSubmit(item.id)} style={styles.commentButton}>
+                  <Image
+                      source={require('../assets/icones/envoyer.png')}
                       style={[styles.icon, {width: 24, height: 24}]}
                     />
-                      {/* <Text style={styles.sendIcon}>Envoyer</Text> */}
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </View>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <TouchableOpacity  onPress={() => handleCommentButtonPress(item.id)}>
+                  <Image
+                    source={require('../assets/icones/commenter.png')}
+                    style={[styles.icon, {width: 24, height: 24, marginLeft:10}]}
+                  />
+                </TouchableOpacity>
+              )}
+              <TouchableOpacity>
+                <Image
+                  source={require('../assets/icones/liker.png')}
+                  style={[styles.icon, {width: 24, height: 24}]}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <Image
+                  source={require('../assets/icones/partager.png')}
+                  style={[styles.icon, {width: 24, height: 24}]}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleViewComments(item.id)} style={styles.actionButton}>
+                <Text style={styles.actionViewComment}>{showComments ? 'Close comments' : 'View comments'}</Text>
+              </TouchableOpacity>
             </View>
-          ))
+            {showComments && comments.length > 0 && (
+              <View style={{backgroundColor: '#fff'}}>
+                <Text style={styles.commentsHeading}>Comments :</Text>
+                <FlatList
+                  data={comments}
+                  renderItem={({item}) => (
+                    <View style={styles.commentItem}>
+                      <Text style={styles.commentContent}>{item.content}</Text>
+                      <Text style={styles.commentTimestamp}>{item.timestamp.toDate().toLocaleString("fr-FR")}</Text>
+                    </View>
+                  )}
+                  keyExtractor={(item, index) => index.toString()}
+                />
+              </View>
+            )}
+          </View>
         )}
-      </ScrollView>
-      <BottomBar namePage="Home"/>
-    </SafeAreaView>
+        keyExtractor={(item) => item.id}
+      />
+       <BottomBar handleRefresh={handleRefresh} />
+    </View>
   );
-};
-
+}
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: 'column',
+    paddingTop: 10,
     backgroundColor: '#fff',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    marginBottom: 16,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
+    padding: 0,
+    marginTop:25,
     backgroundColor: '#fff',
   },
   searchInput: {
@@ -343,8 +324,8 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderWidth: 0.5,
     borderRadius: 5,
-    marginRight: 10,
-    paddingLeft: 10,
+    marginRight:10,
+    marginLeft:20,
   },
   searchIcon: {
     color: 'orange',
@@ -354,105 +335,117 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
   },
-  errorText: {
-    color: 'red',
-  },
-  RecipeContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  RecipeText: {
-    fontSize: 24,
-    color: 'green',
-    textAlign: 'center',
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    margin: 16,
-    elevation: 2,
-  },
-  userContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-  },
-  image: {
-    width: '100%',
-    height: 400,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    marginBottom: 8,
-  },
-  imageProfile: {
-    width: '15%',
-    height: 50,
-    borderRadius: 25,
-    marginBottom: 8,
-    overflow: 'hidden',
-  },
-  userName: {
-    color:'#000',
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    marginLeft:10,
-  },
-  content: {
-    padding: 16,
-  },
-  date: {
-    fontSize: 14,
-    color: '#888',
-    marginBottom: 4,
+  backButton: {
+    position: 'absolute',
+    left: 16,
   },
   title: {
-    color:'#000',
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 8,
+    fontSize: 25,
+    color: 'green',
   },
-  description: {
-    fontSize: 16,
-    color: '#444',
+  postContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    marginVertical: 10,
+    padding: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
-  iconsContainer: {
+  userInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 8,
+    marginBottom: 10,
+  },
+  userImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 10,
+  },
+  userName: {
+    color: '#000',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  postImage: {
+    width: '100%',
+    height: 200,
+    resizeMode: 'cover',
+    marginBottom: 10,
+    borderRadius: 10,
+  },
+  contentContainer: {},
+  postDate: {
+    color: '#888',
+    marginBottom: 5,
+  },
+  postTitle: {
+    color: '#000',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  postContent: {
+    color: '#000',
+    marginBottom: 10,
+  },
+  actionsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  commentContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  commentInput: {
+    flex: 1,
+    height: 40,
+    borderColor: 'gray',
+    color:'gray',
+    borderWidth: 1,
+    borderRadius: 5,
+    marginRight: 10,
+    paddingHorizontal: 10,
+  },
+  commentButton: {
+    padding: 8,
+    backgroundColor: 'orange',
+    borderRadius: 5,
   },
   icon: {
     width: 24,
     height: 24,
   },
-  likes: {
-    fontSize: 16,
-    color: 'gray',
-    marginTop: 4,
+  actionButton: {
+    backgroundColor: 'orange',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 5,
   },
-  commentContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 8,
-    borderWidth: 1,
-    borderColor: '#888',
-    borderRadius: 8,
-    paddingHorizontal: 8,
+  actionViewComment: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
-  commentInput: {
-    flex: 1,
-    paddingVertical: 8,
-    fontSize: 16,
-    color: '#333',
+  commentsHeading: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 10,
+    marginBottom: 5,
   },
-  viewComments: {
-    color:'green',
-    fontSize: 16,
-    marginLeft: 8,
+  commentItem: {
+    marginBottom: 10,
   },
-  sendIcon: {
-    color:'#000',
-    marginLeft: 8,
+  commentContent: {
+    color: 'green',
+  },
+  commentTimestamp: {
+    color: '#888',
   },
 });
