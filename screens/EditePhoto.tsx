@@ -4,6 +4,7 @@ import {View, TouchableOpacity, Text, StyleSheet, Alert, Platform} from 'react-n
 import {useNavigation} from "@react-navigation/native";
 import ImagePicker from 'react-native-image-picker';
 import BottomBar from '../components/BottomBar';
+import HeaderBar from '../components/HeaderBar';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import 'firebase/compat/storage';
@@ -81,6 +82,7 @@ const EditePhoto = () => {
   };
   return (
     <View style={styles.container}>
+       <HeaderBar namePage="Home" />
       <View style={styles.header}>
         {/* <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Profile')}>
           <Text style={styles.title}>Retour</Text>

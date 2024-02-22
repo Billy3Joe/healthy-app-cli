@@ -4,6 +4,7 @@ import {View, TextInput, TouchableOpacity, Text, StyleSheet, Alert} from 'react-
 import {useNavigation} from "@react-navigation/native";
 // import Icon from 'react-native-vector-icons/Ionicons';
 import BottomBar from '../components/BottomBar';
+import HeaderBar from '../components/HeaderBar';
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import 'firebase/compat/auth';
@@ -31,6 +32,7 @@ const EditeEmail = () => {
 
   return (
     <View style={styles.container}>
+      <HeaderBar namePage="Home" />
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Profile')}>
           {/* <Ionicons onPress={() => navigation.navigate('Profile')} name="arrow-back" size={24} color="black" /> */}

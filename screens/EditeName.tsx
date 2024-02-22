@@ -47,6 +47,7 @@ const EditeName = () => {
 
   return (
     <View style={styles.container}>
+      <HeaderBar namePage="Home" />
       <View style={styles.header}>
         {/* <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Profile')}>
           <Text style={styles.title}>Retour</Text>
