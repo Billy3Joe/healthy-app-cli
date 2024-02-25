@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "708037718915",
+    "project_id": "recipes-app-c60eb",
+    "storage_bucket": "recipes-app-c60eb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:708037718915:android:76f2c9a5bc88c847693cb6",
+        "android_client_info": {
+          "package_name": "com.healthyapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "708037718915-93ubrml40g2gojgmdleseu4pivd3ujm2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqgINkkfjA8LsmqcNcYQWULQ6OkFsOV9U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "708037718915-93ubrml40g2gojgmdleseu4pivd3ujm2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
