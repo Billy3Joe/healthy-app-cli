@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, {useState} from 'react';
+import { useState} from 'react';
 import {
   View,
   TextInput,
@@ -8,16 +8,21 @@ import {
   // Image,
   StyleSheet,
   Alert,
+  PermissionsAndroid,
+  Platform,
+  NativeModules,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 // import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as ImagePicker from 'react-native-image-picker';
+import {
+  launchCamera,
+} from 'react-native-image-picker';
 import BottomBar from '../components/BottomBar';
 import HeaderBar from '../components/HeaderBar';
 
 /* eslint-disable quotes */
-/* eslint-disable prettier/prettier */
-// Import the functions you need from the SDKs you need
+/* eslint-disable prettier/prettier */// Import the functions you need from the SDKs you need
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/firestore';
 import 'firebase/compat/storage';
@@ -47,6 +52,84 @@ export default function CreatePost() {
   const [image, setImage] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  /// image 
+  const requestCameraPermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA
+        );
+        // If CAMERA Permission is granted
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (err) {
+        console.warn(err);
+        return false;
+      }
+    } else {return true;}
+  };
+  const requestExternalWritePermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        );
+        // If WRITE_EXTERNAL_STORAGE Permission is granted
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (err) {
+        console.warn(err);
+        Alert.alert('Write permission err'+ err);
+      }
+      return false;
+    } else {return true;}
+  };
+
+   /// -- Camera 
+   const captureImage = async (type) => {
+    let options = {
+      mediaType: type,
+      maxWidth: 300,
+      maxHeight: 550,
+      quality: 1,
+      videoQuality: 'low',
+      durationLimit: 30, //Video max duration in seconds
+      saveToPhotos: true,
+    };
+    let isCameraPermitted = await requestCameraPermission();
+    let isStoragePermitted = await requestExternalWritePermission();
+    if (isCameraPermitted && isStoragePermitted) {
+      launchCamera(options, (response) => {
+        console.log('Response = ', response);
+
+        if (response.didCancel) {
+          Alert.alert('User cancelled camera picker');
+          return;
+        } else if (response.errorCode == 'camera_unavailable') {
+          Alert.alert('Camera not available on device');
+          return;
+        } else if (response.errorCode == 'permission') {
+          Alert.alert('Permission not satisfied');
+          return;
+        } else if (response.errorCode == 'others') {
+          Alert.alert(response.errorMessage);
+          return;
+        }
+        console.log('base64 -> ', response.assets[0].base64);
+        console.log('uri -> ', response.assets[0].uri);
+        console.log('width -> ', response.assets[0].width);
+        console.log('height -> ', response.assets[0].height);
+        console.log('fileSize -> ', response.assets[0].fileSize);
+        console.log('type -> ', response.assets[0].type);
+        console.log('fileName -> ', response.assets[0].fileName);
+        setImage(response.assets[0].uri);
+      });
+    }
+  };
+  /// --------- native element 
+  const {CalendarModule} = NativeModules;
+    const onPress = () => {
+      CalendarModule.createCalendarEvent('testName', 'testLocation');
+    };
+ //
   const handleAddPost = async () => {
     try {
       const uid = firebase.auth().currentUser.uid;
@@ -100,6 +183,7 @@ export default function CreatePost() {
       console.error('Error adding post:', error);
     }
   };
+
   const pickImage = async () => {
     try {
       const options = {
@@ -128,8 +212,11 @@ export default function CreatePost() {
         <Text style={styles.title}>Publier votre recette</Text>
       </View>
       <View style={styles.formContainer}>
-        <TouchableOpacity style={styles.addButton} onPress={pickImage}>
+        <TouchableOpacity style={styles.addButton} onPress={onPress}>
           <Text style={styles.buttonText}>Sélectionner une image</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.addButton} onPress={()=>captureImage('photo')}>
+          <Text style={styles.buttonText}>prendre une image</Text>
         </TouchableOpacity>
         <Text />
         <TextInput

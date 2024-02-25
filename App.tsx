@@ -11,10 +11,34 @@ import CreatePost from './screens/CreatePost';
 import SignIn from './screens/Login';
 import SignUp from './screens/Signup';
 import InitialPage from './screens/InitialPage';
+import messaging from '@react-native-firebase/messaging';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  messaging().requestPermission().then((permission) => {
+    if(permission) {
+      console.log('Permission granted');
+    } else {
+      console.log('Permission denied');
+    }
+  });
+ 
+// Handle incoming notifications when app is in foreground
+messaging().onMessage(async (remoteMessage) => {
+  console.log('Received foreground notification: ', remoteMessage);
+});
+
+// Handle incoming notifications when app is in background
+messaging().onNotificationOpenedApp(async (remoteMessage) => {
+  console.log('Received background notification: ', remoteMessage);
+});
+
+// Handle incoming notifications when app is closed
+messaging().getInitialNotification().then(async (remoteMessage) => {
+  console.log('Received closed app notification: ', remoteMessage);
+});
+
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -23,9 +47,9 @@ export default function App() {
         //   headerShown: false,
         // }}
       >
-        <Stack.Screen name="InitialPage" component={InitialPage} />
-        <Stack.Screen name="Signup" component={SignUp} />
-        <Stack.Screen name="Login" component={SignIn} />
+        <Stack.Screen name="InitialPage" component={InitialPage} options={{ headerShown: false }} />
+        <Stack.Screen name="Signup" component={SignUp} options={{ headerShown: false }} />
+        <Stack.Screen name="Login" component={SignIn} options={{ headerShown: false }}/>
         <Stack.Screen name="CreatePost" component={CreatePost} />
         <Stack.Screen name="Profile" component={Profile} />
         <Stack.Screen name="EditeName" component={EditeName} />
@@ -38,6 +62,7 @@ export default function App() {
           }}
           name="Home"
           component={Home}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>
