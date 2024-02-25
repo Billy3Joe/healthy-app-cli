@@ -20,7 +20,7 @@ Accédez au répertoire du projet :
 
 bash
 
-cd healthyApp
+cd healthy-app-cli
 
 Installez les dépendances du projet :
 

@@ -5,59 +5,47 @@ import {useNavigation} from '@react-navigation/native';
 // import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import BottomBar from '../components/BottomBar';
-// import HeaderBar from '../components/HeaderBar';
-
-/* eslint-disable quotes */
-/* eslint-disable prettier/prettier */
-// Import the functions you need from the SDKs you need
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/firestore';
-import 'firebase/compat/storage';
-import 'firebase/compat/auth';
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: 'AIzaSyDov17ALUBYKsRRPqR6xxYGLq2Xs66_rtw',
-  authDomain: 'recipes-app-c60eb.firebaseapp.com',
-  projectId: 'recipes-app-c60eb',
-  storageBucket: 'recipes-app-c60eb.appspot.com',
-  messagingSenderId: '708037718915',
-  appId: '1:708037718915:web:acb4159698d39547693cb6',
-  measurementId: 'G-Z1V69ZH6S3',
-};
-
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-
 import placeholderImage from '../assets/img-profiles/avatar.jpg';
+import {firebase} from '../lib/firebase';
 
 export default function Profile() {
   const navigation = useNavigation();
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const currentUser = firebase.auth().currentUser;
-    if (currentUser) {
+  // Démarre un effet de côté pour récupérer les données de l'utilisateur actuellement connecté
+useEffect(() => {
+  // Récupère l'utilisateur actuellement connecté à l'application
+  const currentUser = firebase.auth().currentUser;
+  // Vérifie s'il y a un utilisateur connecté
+  if (currentUser) {
+      // Récupère l'identifiant unique de l'utilisateur
       const uid = currentUser.uid;
+      // Récupère le document utilisateur correspondant à partir de la collection "users" dans Firestore
       firebase.firestore().collection('users').doc(uid).get()
-        .then((doc) => {
-          if (doc.exists) {
-            const userData = doc.data();
-            console.log("User data:", userData); // Vérifier les données utilisateur récupérées
-            setUser(userData);
-          } else {
-            console.log("User document not found");
-          }
-        })
-        .catch((error) => {
-          console.error("Error retrieving user document:", error);
-        });
-    } else {
+          .then((doc) => {
+              // Gère la réponse de la requête de récupération du document utilisateur
+              if (doc.exists) {
+                  // Récupère les données du document utilisateur
+                  const userData = doc.data();
+                  // Affiche les données de l'utilisateur dans la console pour vérification
+                  console.log("User data:", userData);
+                  // Met à jour l'état de l'utilisateur avec les données récupérées
+                  setUser(userData);
+              } else {
+                  // Si le document utilisateur n'existe pas, affiche un message d'erreur
+                  console.log("User document not found");
+              }
+          })
+          .catch((error) => {
+              // Gère les erreurs éventuelles lors de la récupération du document utilisateur
+              console.error("Error retrieving user document:", error);
+          });
+  } else {
+      // Si aucun utilisateur n'est connecté, affiche un message indiquant que l'utilisateur n'est pas connecté
       console.log("User not logged in");
-    }
-  }, []);
+  }
+}, []);
+
 
   return (
     <View style={styles.container}>

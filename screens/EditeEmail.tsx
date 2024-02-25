@@ -5,9 +5,8 @@ import {useNavigation} from "@react-navigation/native";
 // import Icon from 'react-native-vector-icons/Ionicons';
 import BottomBar from '../components/BottomBar';
 import HeaderBar from '../components/HeaderBar';
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/firestore';
-import 'firebase/compat/auth';
+import {firebase} from '../lib/firebase';
+
 const EditeEmail = () => {
   const navigation = useNavigation();
   const [email, setEmail] = useState('');

@@ -24,3 +24,6 @@ if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
 // export default firebase;
+const db = firebase.firestore();
+// eslint-disable-next-line eol-last
+export {firebase, db}; // Exportez firebase et db pour les utiliser dans d'autres fichiers

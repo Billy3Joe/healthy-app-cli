@@ -20,36 +20,11 @@ import {
 } from 'react-native-image-picker';
 import BottomBar from '../components/BottomBar';
 import HeaderBar from '../components/HeaderBar';
-
-/* eslint-disable quotes */
-/* eslint-disable prettier/prettier */// Import the functions you need from the SDKs you need
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/firestore';
-import 'firebase/compat/storage';
-import 'firebase/compat/auth';
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: 'AIzaSyDov17ALUBYKsRRPqR6xxYGLq2Xs66_rtw',
-  authDomain: 'recipes-app-c60eb.firebaseapp.com',
-  projectId: 'recipes-app-c60eb',
-  storageBucket: 'recipes-app-c60eb.appspot.com',
-  messagingSenderId: '708037718915',
-  appId: '1:708037718915:web:acb4159698d39547693cb6',
-  measurementId: 'G-Z1V69ZH6S3',
-};
-
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig);
-}
-// export default firebase;
+import {firebase} from '../lib/firebase'; 
 
 export default function CreatePost() {
   const navigation = useNavigation();
-  const [image, setImage] = useState('');
+  const [image, setImage] = useState('');Profile_Image
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   /// image 
@@ -212,7 +187,7 @@ export default function CreatePost() {
         <Text style={styles.title}>Publier votre recette</Text>
       </View>
       <View style={styles.formContainer}>
-        <TouchableOpacity style={styles.addButton} onPress={onPress}>
+        <TouchableOpacity style={styles.addButton} onPress={pickImage}>
           <Text style={styles.buttonText}>Sélectionner une image</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.addButton} onPress={()=>captureImage('photo')}>
